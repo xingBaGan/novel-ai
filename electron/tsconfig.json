@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "outDir": "../out",
+    "rootDir": ".."
+  },
+  "include": [
+    "main/**/*",
+    "preload/**/*",
+    "../packages/types/**/*",
+    "../packages/utils/**/*"
+  ]
+} 

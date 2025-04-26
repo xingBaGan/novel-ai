@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build output
+node_modules
+dist
+dist-ssr
+out
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+content
+.contentlayer
+
+# Electron-builder output
+dist_electron
+
+# 排除 templates 目录下的所有文件，但保留目录本身
+templates/*
+!templates/.gitkeep
+
+!templates/templates_avaliable.json
+
+.gitmodules
