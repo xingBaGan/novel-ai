@@ -5,25 +5,34 @@ import { SettingsProvider, useSettings } from './contexts/SettingsContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { scan } from "react-scan";
+import { InstallStatus } from '../types';
+import InstallConfirmDialog from './components/InstallConfirmDialog';
+import MessageBox from './components/MessageBox';
 
 const isDev = import.meta.env.DEV;
 if (isDev) {
   scan({ enabled: true, log: true, showToolbar: true });
 }
-// 添加CSS属性类型
-const dragStyle = {
-  WebkitAppRegion: 'drag'
-} as React.CSSProperties;
-
-const noDragStyle = {
-  WebkitAppRegion: 'no-drag'
-} as React.CSSProperties;
 
 function AppContent() {
   const { t } = useTranslation();
   const { isSettingsOpen, setIsSettingsOpen } = useSettings();
   const [isMaximized, setIsMaximized] = useState(false);
   const [message, setMessage] = useState<{show: boolean; text: string}>({ show: false, text: '' });
+  const [installStatus, setInstallStatus] = useState<InstallStatus>(InstallStatus.Installed);
+  const [showInstallConfirm, setShowInstallConfirm] = useState<{
+    isOpen: boolean;
+    checkResult: any;
+  } | null>(null);
+  const [messageBox, setMessageBox] = useState<{
+    isOpen: boolean;
+    message: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+  }>({
+    isOpen: false,
+    message: '',
+    type: 'info'
+  });
 
   // 添加最大化状态监听
   useEffect(() => {
@@ -39,6 +48,71 @@ function AppContent() {
     };
   }, []);
 
+  useEffect(() => {
+    const checkAndPromptInstall = async () => {
+      try {
+        const checkResult = await window.electron.checkEnvironment();
+        if (checkResult.needsInstall) {
+          setShowInstallConfirm({
+            isOpen: true,
+            checkResult
+          });
+          return;
+        }
+        setMessageBox({
+          isOpen: true,
+          message: t('environmentCheckComplete'),
+          type: 'success'
+        });
+      } catch (error) {
+        console.error('Environment check failed:', error);
+        setMessageBox({
+          isOpen: true,
+          message: t('environmentCheckFailed'),
+          type: 'error'
+        });
+      }
+    };
+    checkAndPromptInstall()
+  }, [])
+
+
+    // Message box close
+    const messageBoxClose = () => {
+      setMessageBox(prev => ({ ...prev, isOpen: false }));
+    };
+
+    // Install environment
+    const handleInstallConfirm = async () => {
+      try {
+        setInstallStatus(InstallStatus.Installing);
+        setShowInstallConfirm(null);
+        await window.electron.installEnvironment();
+      } catch (error) {
+        console.error('Installation failed:', error);
+        setMessageBox({
+          isOpen: true,
+          message: t('installationFailed', { error: String(error) }),
+          type: 'error'
+        });
+      } finally {
+        setInstallStatus(InstallStatus.Installed);
+        const installResult = await window.electron.checkEnvironment();
+        if (!installResult.needsInstall) {
+          setMessageBox({
+            isOpen: true,
+            message: t('installationComplete'),
+            type: 'success'
+          });
+        } else {
+          setMessageBox({
+            isOpen: true,
+            message: t('restartAgainAndInstall'),
+            type: 'error'
+          });
+        }
+      }
+    };
 
   const showMessage = (text: string) => {
     setMessage({ show: true, text });
@@ -54,11 +128,10 @@ function AppContent() {
       {/* 自定义标题栏 */}
       <div
         className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none"
-        style={dragStyle}
         onDoubleClick={() => window.electron?.maximize()}
       >
         <div className="text-gray-700 text-bold">{t('title')}</div>
-        <div className="flex items-center space-x-2" style={noDragStyle}>
+        <div className="flex items-center space-x-2">
           <button
             onClick={() => window.electron?.minimize()}
             className="p-1 rounded hover:bg-gray-500"
@@ -110,6 +183,23 @@ function AppContent() {
         )}
 
       </div>
+
+      {/* 安装环境确认 */}
+      {showInstallConfirm && (
+        <InstallConfirmDialog
+          isOpen={showInstallConfirm.isOpen}
+          onCancel={() => setShowInstallConfirm(null)}
+          onConfirm={handleInstallConfirm}
+          checkResult={showInstallConfirm.checkResult}
+        />
+      )}
+
+      <MessageBox
+        isOpen={messageBox.isOpen}
+        onClose={messageBoxClose}
+        message={messageBox.message}
+        type={messageBox.type}
+      />
     </div>
   );
 }

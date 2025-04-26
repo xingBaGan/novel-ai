@@ -33,6 +33,8 @@ interface ElectronAPI {
     warn: (message: string, meta?: any) => void;
     debug: (message: string, meta?: any) => void;
   }
+  checkEnvironment: () => Promise<{ needsInstall: boolean }>
+  installEnvironment: () => Promise<void>
 }
 
 declare global {

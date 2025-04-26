@@ -55,7 +55,8 @@ async function checkEnvironment() {
             console.error('venv check failed:', err.message);
         }
         // 检查虚拟环境是否存在且包含必要的包
-        const venvPath = isDev ? path.join(__dirname, '../venv') : path.join(process.resourcesPath, 'venv');
+        const venvPath = isDev ? path.join(__dirname, '../../../venv') : path.join(process.resourcesPath, 'venv');
+        console.log('venvPath', venvPath)
         if (fs.existsSync(venvPath)) {
             const venvPython = isMac
                 ? path.join(venvPath, 'bin/python3')
@@ -63,7 +64,7 @@ async function checkEnvironment() {
             if (fs.existsSync(venvPython)) {
                 try {
                     // 检查关键包是否安装
-                    const packages = ['numpy', 'requests'];
+                    const packages = ['pyJianYingDraft'];
                     for (const pkg of packages) {
                         execSync(`${venvPython} -c "import ${pkg}"`);
                     }

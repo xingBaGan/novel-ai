@@ -33,7 +33,10 @@ const api = {
       ipcRenderer.invoke('log', { level: 'warn', message, meta }),
     debug: (message: string, meta?: any) => 
       ipcRenderer.invoke('log', { level: 'debug', message, meta }),
-  }
+  },
+  // =============== 环境检查相关 ===============
+  checkEnvironment: () => ipcRenderer.invoke('check-environment'),
+  installEnvironment: () => ipcRenderer.invoke('install-environment'),
 }
 
 // 使用contextBridge暴露API给渲染进程
