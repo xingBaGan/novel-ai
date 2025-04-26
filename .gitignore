@@ -37,3 +37,4 @@ templates/*
 !templates/templates_avaliable.json
 
 .gitmodules
+venv

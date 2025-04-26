@@ -1,6 +1,7 @@
 import { ipcMain, dialog, app } from "electron"
 import type { BrowserWindow } from "electron"
 import { getSettings, saveSettings } from "./fileService"
+import { checkEnvironment, installEnvironment } from '../../../script/script.cjs'
 import { join } from "path"
 import fs from "fs/promises"
 import { logger } from './logService'
@@ -39,6 +40,13 @@ function initIpcMain(mainWindow: BrowserWindow) {
     await saveSettings(settings)
   })
 
+  ipcMain.handle('check-environment', async () => {
+    return await checkEnvironment()
+  })
+
+  ipcMain.handle('install-environment', async () => {
+    return await installEnvironment()
+  })
 
   // Add logging handler
   ipcMain.handle('log', async (_, { level, message, meta }) => {

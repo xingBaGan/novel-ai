@@ -90,6 +90,9 @@ importers:
       postcss:
         specifier: ^8.4.35
         version: 8.5.3
+      python-shell:
+        specifier: ^5.0.0
+        version: 5.0.0
       rimraf:
         specifier: ^5.0.10
         version: 5.0.10
@@ -2928,6 +2931,10 @@ packages:
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
+
+  python-shell@5.0.0:
+    resolution: {integrity: sha512-RUOOOjHLhgR1MIQrCtnEqz/HJ1RMZBIN+REnpSUrfft2bXqXy69fwJASVziWExfFXsR1bCY0TznnHooNsCo0/w==}
+    engines: {node: '>=0.10'}
 
   qs@6.13.0:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
@@ -6687,6 +6694,8 @@ snapshots:
       once: 1.4.0
 
   punycode@2.3.1: {}
+
+  python-shell@5.0.0: {}
 
   qs@6.13.0:
     dependencies:
