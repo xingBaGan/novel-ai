@@ -4,6 +4,12 @@ import { Settings, Minus, Square, X, CopyIcon, Cog, CheckCircle } from 'lucide-r
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import { scan } from "react-scan";
+
+const isDev = import.meta.env.DEV;
+if (isDev) {
+  scan({ enabled: true, log: true, showToolbar: true });
+}
 // 添加CSS属性类型
 const dragStyle = {
   WebkitAppRegion: 'drag'
