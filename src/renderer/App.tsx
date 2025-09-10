@@ -8,6 +8,7 @@ import { scan } from "react-scan";
 import { InstallStatus } from '../types';
 import InstallConfirmDialog from './components/InstallConfirmDialog';
 import MessageBox from './components/MessageBox';
+import NovelEditor from "./components/NovelEditor";
 
 const isDev = import.meta.env.DEV;
 if (isDev) {
@@ -48,33 +49,33 @@ function AppContent() {
     };
   }, []);
 
-  useEffect(() => {
-    const checkAndPromptInstall = async () => {
-      try {
-        const checkResult = await window.electron.checkEnvironment();
-        if (checkResult.needsInstall) {
-          setShowInstallConfirm({
-            isOpen: true,
-            checkResult
-          });
-          return;
-        }
-        setMessageBox({
-          isOpen: true,
-          message: t('environmentCheckComplete'),
-          type: 'success'
-        });
-      } catch (error) {
-        console.error('Environment check failed:', error);
-        setMessageBox({
-          isOpen: true,
-          message: t('environmentCheckFailed'),
-          type: 'error'
-        });
-      }
-    };
-    checkAndPromptInstall()
-  }, [])
+  // useEffect(() => {
+  //   const checkAndPromptInstall = async () => {
+  //     try {
+  //       const checkResult = await window.electron.checkEnvironment();
+  //       if (checkResult.needsInstall) {
+  //         setShowInstallConfirm({
+  //           isOpen: true,
+  //           checkResult
+  //         });
+  //         return;
+  //       }
+  //       setMessageBox({
+  //         isOpen: true,
+  //         message: t('environmentCheckComplete'),
+  //         type: 'success'
+  //       });
+  //     } catch (error) {
+  //       console.error('Environment check failed:', error);
+  //       setMessageBox({
+  //         isOpen: true,
+  //         message: t('environmentCheckFailed'),
+  //         type: 'error'
+  //       });
+  //     }
+  //   };
+  //   checkAndPromptInstall()
+  // }, [])
 
 
     // Message box close
@@ -129,6 +130,10 @@ function AppContent() {
       <div
         className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none"
         onDoubleClick={() => window.electron?.maximize()}
+        style={{
+          userSelect: 'none',
+          WebkitAppRegion: 'drag',
+        }}
       >
         <div className="text-gray-700 text-bold">{t('title')}</div>
         <div className="flex items-center space-x-2">
@@ -161,8 +166,8 @@ function AppContent() {
       </div>
 
       {/* 主内容区域 */}
-      <div className="flex-1 flex relative h-[calc(100vh-32px)]">
-
+      <div className="">
+        <NovelEditor />
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}

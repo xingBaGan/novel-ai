@@ -33,7 +33,19 @@ const config = {
       filter: [
         "**/*"
       ]
-    }
+    },
+    {
+      "from": "install.bat",
+      "to": "install.bat"
+    },
+    {
+      "from": "install.command",
+      "to": "install.command"
+    },
+    {
+      "from": "install.sh",
+      "to": "install.sh"
+    },
   ],
   asar: true,
   win: {

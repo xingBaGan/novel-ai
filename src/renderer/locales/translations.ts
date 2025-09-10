@@ -21,7 +21,7 @@ export const translations = {
     checkEnvironmentVariable: 'Please check if the environment variable is correct',
   },
   zh: {
-    title: '视频助手',
+    title: '写作助手',
     minimize: '最小化',
     maximize: '最大化',
     close: '关闭',
