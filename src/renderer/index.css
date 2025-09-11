@@ -190,6 +190,10 @@ pre {
   height: 0;
 }
 
+.ProseMirror li.is-empty::before {
+  content: "";
+  display: none;
+}
 /* Custom image styles */
 
 .ProseMirror img {

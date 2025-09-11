@@ -128,7 +128,7 @@ function AppContent() {
     >
       {/* 自定义标题栏 */}
       <div
-        className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none"
+        className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none fixed top-0 left-0 right-0 z-50 w-full"
         onDoubleClick={() => window.electron?.maximize()}
         style={{
           userSelect: 'none',
