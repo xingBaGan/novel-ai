@@ -1,5 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
+import { fork } from 'child_process'
+import type { ChildProcess } from 'child_process'
 import initIpcMain from './services/index.js'
 import { logger } from './services/logService'
 
@@ -11,6 +13,33 @@ const getAssetPath = (...paths: string[]): string => {
 }
 
 let mainWindow: BrowserWindow | null = null
+let backendProcess: ChildProcess | null = null
+
+function startBackend() {
+  const backendPath = app.isPackaged
+    ? join(process.resourcesPath, 'app.asar', 'backend/dist/index.js')
+    : join(__dirname, '../../../backend/dist/index.js')
+  
+  logger.info(`Starting backend server from: ${backendPath}`)
+
+  backendProcess = fork(backendPath, [], {
+    silent: true, // Pipe stdout/stderr to the parent process
+    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
+  })
+
+  backendProcess.stdout?.on('data', (data) => {
+    logger.info(`[Backend]: ${data.toString().trim()}`)
+  })
+
+  backendProcess.stderr?.on('data', (data) => {
+    logger.error(`[Backend Error]: ${data.toString().trim()}`)
+  })
+
+  backendProcess.on('close', (code) => {
+    logger.warn(`Backend process exited with code ${code}`)
+    // Optionally, you can try to restart it
+  })
+}
 
 async function createWindow() {
   logger.info('Creating main window')
@@ -54,6 +83,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 app.whenReady().then(async () => {
   logger.info('Application starting')
+  startBackend()
   await createWindow()
 })
 
@@ -62,6 +92,11 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+app.on('will-quit', () => {
+  logger.info('Application will quit, killing backend process.')
+  backendProcess?.kill()
 })
 
 app.on('activate', () => {

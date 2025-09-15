@@ -80,8 +80,6 @@ export {
   CustomKeymap,
   TiptapLink,
   UpdatedImage,
-  Youtube,
-  Twitter,
   Mathematics,
   CharacterCount,
   GlobalDragHandle,

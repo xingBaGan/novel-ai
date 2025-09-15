@@ -194,6 +194,11 @@ pre {
   content: "";
   display: none;
 }
+
+.ProseMirror ul.is-empty::before {
+  content: "";
+  display: none;
+}
 /* Custom image styles */
 
 .ProseMirror img {
