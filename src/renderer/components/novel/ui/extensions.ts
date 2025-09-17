@@ -25,6 +25,7 @@ import {
 import { Markdown } from "tiptap-markdown";
 import { cx } from "class-variance-authority";
 import { common, createLowlight } from "lowlight";
+import { chineseEnglishWordCounter } from "../../../utils/wordCounter";
 
 //TODO I am using cx here to get tailwind autocomplete working, idk if someone else can write a regex to just capture the class key in objects
 const aiHighlight = AIHighlight;
@@ -146,7 +147,9 @@ const mathematics = Mathematics.configure({
   },
 });
 
-const characterCount = CharacterCount.configure();
+const characterCount = CharacterCount.configure({
+  wordCounter: chineseEnglishWordCounter,
+});
 
 const markdownExtension = Markdown.configure({
   html: true,

@@ -128,15 +128,14 @@ function AppContent() {
     >
       {/* 自定义标题栏 */}
       <div
-        className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none fixed top-0 left-0 right-0 z-50 w-full"
+        className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none fixed top-0 left-0 right-0 z-1 w-full"
         onDoubleClick={() => window.electron?.maximize()}
         style={{
-          userSelect: 'none',
           WebkitAppRegion: 'drag',
         }}
       >
         <div className="text-gray-700 text-bold">{t('title')}</div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2" style={{ WebkitAppRegion: 'no-drag' }}>
           <button
             onClick={() => window.electron?.minimize()}
             className="p-1 rounded hover:bg-gray-500"
@@ -166,7 +165,7 @@ function AppContent() {
       </div>
 
       {/* 主内容区域 */}
-      <div className="">
+      <>
         <NovelEditor />
         <SettingsModal
           isOpen={isSettingsOpen}
@@ -186,8 +185,7 @@ function AppContent() {
             </div>
           </div>
         )}
-
-      </div>
+      </>
 
       {/* 安装环境确认 */}
       {showInstallConfirm && (
