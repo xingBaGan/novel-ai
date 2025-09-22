@@ -9,8 +9,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.15",
     "@openrouter/ai-sdk-provider": "^1.2.0",
+    "ai-gateway-provider": "^2.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "express": "^4.18.2",
     "multer": "^1.4.5-lts.1"
   },

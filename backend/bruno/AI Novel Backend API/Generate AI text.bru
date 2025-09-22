@@ -1,0 +1,19 @@
+meta {
+  name: Generate AI text
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/generate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "prompt": "天空是蓝色的吗？",
+    "option": "",
+    "command": ""
+  }
+}

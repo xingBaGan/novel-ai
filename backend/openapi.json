@@ -1,0 +1,224 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "AI Novel Backend API",
+    "version": "1.0.0",
+    "description": "OpenAPI v3 specification for AI Novel Backend API."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development"
+    },
+    {
+      "url": "https://your-production-domain.com",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/api/generate": {
+      "post": {
+        "summary": "Generate AI text",
+        "description": "Generate AI text using Cloudflare AI Gateway with Gemini models.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              },
+              "examples": {
+                "minimal": {
+                  "summary": "Minimal request",
+                  "value": {
+                    "prompt": "Hello, how are you?"
+                  }
+                },
+                "full": {
+                  "summary": "Full request",
+                  "value": {
+                    "prompt": "Write a short story about a robot learning to paint",
+                    "option": "creative",
+                    "command": "generate story"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload": {
+      "post": {
+        "summary": "Upload a file",
+        "description": "Upload a file; it will be stored in the uploads directory with a unique filename.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "File to upload"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No file uploaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                },
+                "examples": {
+                  "noFile": {
+                    "summary": "No file provided",
+                    "value": {
+                      "error": "No file uploaded."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GenerateRequest": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Prompt to generate from"
+          },
+          "option": {
+            "type": "string",
+            "description": "Optional generation option"
+          },
+          "command": {
+            "type": "string",
+            "description": "Optional command input"
+          }
+        },
+        "example": {
+          "prompt": "Write a short story about a robot learning to paint",
+          "option": "creative",
+          "command": "generate story"
+        }
+      },
+      "GenerateResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "extracted_text": {
+            "type": "string"
+          },
+          "received_body": {
+            "$ref": "#/components/schemas/GenerateRequest"
+          }
+        }
+      },
+      "UploadResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Public URL for the uploaded file",
+            "example": "/uploads/file-1700000000000-123456789.png"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "BadRequestResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "No file uploaded."
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Internal server error"
+          },
+          "message": {
+            "type": "string",
+            "example": "Failed to generate text"
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ]
+      }
+    }
+  }
+}
+
+

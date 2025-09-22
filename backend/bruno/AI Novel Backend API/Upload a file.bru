@@ -1,0 +1,15 @@
+meta {
+  name: Upload a file
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/upload
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: 
+}
