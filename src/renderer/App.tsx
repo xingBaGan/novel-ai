@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { SettingsModal } from './components/SettingsModal';
-import { Settings, Minus, Square, X, CopyIcon, Cog, CheckCircle } from 'lucide-react';
+import { Minus, Square, X, CopyIcon, CheckCircle } from 'lucide-react';
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
+import { CommentsProvider } from './contexts/CommentsContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { scan } from "react-scan";
@@ -9,6 +10,7 @@ import { InstallStatus } from '../types';
 import InstallConfirmDialog from './components/InstallConfirmDialog';
 import MessageBox from './components/MessageBox';
 import NovelEditor from "./components/NovelEditor";
+import Comments from "./components/Comments/index";
 
 const isDev = import.meta.env.DEV;
 if (isDev) {
@@ -20,7 +22,7 @@ function AppContent() {
   const { isSettingsOpen, setIsSettingsOpen } = useSettings();
   const [isMaximized, setIsMaximized] = useState(false);
   const [message, setMessage] = useState<{show: boolean; text: string}>({ show: false, text: '' });
-  const [installStatus, setInstallStatus] = useState<InstallStatus>(InstallStatus.Installed);
+  const [, setInstallStatus] = useState<InstallStatus>(InstallStatus.Installed);
   const [showInstallConfirm, setShowInstallConfirm] = useState<{
     isOpen: boolean;
     checkResult: any;
@@ -130,12 +132,10 @@ function AppContent() {
       <div
         className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none fixed top-0 left-0 right-0 z-1 w-full"
         onDoubleClick={() => window.electron?.maximize()}
-        style={{
-          WebkitAppRegion: 'drag',
-        }}
+        style={{ WebkitAppRegion: 'drag' } as any}
       >
         <div className="text-gray-700 text-bold">{t('title')}</div>
-        <div className="flex items-center space-x-2" style={{ WebkitAppRegion: 'no-drag' }}>
+        <div className="flex items-center space-x-2" style={{ WebkitAppRegion: 'no-drag' } as any}>
           <button
             onClick={() => window.electron?.minimize()}
             className="p-1 rounded hover:bg-gray-500"
@@ -167,6 +167,7 @@ function AppContent() {
       {/* 主内容区域 */}
       <>
         <NovelEditor />
+        <Comments />
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
@@ -211,7 +212,9 @@ export function App() {
   return (
     <SettingsProvider>
       <LanguageProvider>
-        <AppContent />
+        <CommentsProvider>
+          <AppContent />
+        </CommentsProvider>
       </LanguageProvider>
     </SettingsProvider>
   );

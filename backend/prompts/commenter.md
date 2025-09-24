@@ -50,7 +50,11 @@
     {
       "dimension": "string",
       "comment": "string",
-      "example_quotes": ["string", "string"]
+      "example_quotes": ["string", "string"],
+      "score": {
+        "type": "number",
+        "description": "维度得分，0-100分"
+      }
     }
   ],
   "overall_summary": "string"
