@@ -26,11 +26,8 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
 
   const { completion, complete, isLoading } = useCompletion({
     api: "/api/generate",
-    onResponse: (response) => {
-      if (response.status === 429) {
-        toast.error("You have reached your request limit for the day.");
-        return;
-      }
+    onFinish: (prompt, completion) => {
+      console.log('prompt', prompt, 'completion', completion);
     },
     onError: (e) => {
       toast.error(e.message);

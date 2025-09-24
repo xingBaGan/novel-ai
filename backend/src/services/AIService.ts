@@ -1,17 +1,13 @@
 import { streamText } from "ai";
 import { createAiGateway } from "ai-gateway-provider";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { Response } from 'express';
 import "dotenv/config";
+
 export interface GenerateRequest {
   prompt?: string;
   option?: string;
   command?: string;
-}
-
-export interface GenerateResponse {
-  message: string;
-  extracted_text: string;
-  received_body: any;
 }
 
 export class AIService {
@@ -52,48 +48,31 @@ export class AIService {
   }
 
   /**
-   * Generate AI text based on the provided prompt using Cloudflare AI Gateway with Gemini
+   * Generate AI text completion compatible with vercel/ai useCompletion hook
+   * Returns a Response object that can be consumed by the frontend
    */
-  async generateText(request: GenerateRequest): Promise<GenerateResponse> {
-    const { prompt, option, command } = request;
-    
-    // Clean the prompt by removing mark tags
-    let extractedText = prompt ?? command ?? "";
-    extractedText = extractedText.replace(/<mark[^>]*>|<\/mark>/g, '');
-
+  async generateCompletion(prompt: string, response: Response): Promise<void> {
     try {
       // Use Cloudflare AI Gateway with Gemini model
       const result = await streamText({
         model: this.aigateway([
-          this.google("gemini-1.5-pro"), // Primary model
-          this.google("gemini-1.5-flash"), // Fallback model
+          this.google("gemini-2.5-flash-lite"),
+          this.google("gemini-2.5-flash"),
         ]),
-        prompt: extractedText,
+        prompt: prompt,
       });
 
-      // Convert stream to text
-      let generatedText = "";
-      for await (const chunk of result.textStream) {
-        generatedText += chunk;
-      }
-
-      return {
-        message: "AI text generated successfully using Cloudflare AI Gateway with Gemini.",
-        extracted_text: generatedText,
-        received_body: request
-      };
+        // Return the response directly for useCompletion compatibility
+      result.pipeUIMessageStreamToResponse(response);
     } catch (error) {
-      console.error("Error generating text:", error);
-      return {
-        message: "Error generating text. Please check your configuration.",
-        extracted_text: extractedText,
-        received_body: request
-      };
+      console.error("Error generating completion:", error);
+      throw error;
     }
   }
 
   /**
    * Generate streaming AI text response using Cloudflare AI Gateway with Gemini
+   * Legacy method for backward compatibility
    */
   async generateStreamingText(request: GenerateRequest) {
     const { prompt, option, command } = request;

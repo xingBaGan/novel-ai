@@ -1,28 +1,33 @@
-import { ArrowDownWideNarrow, CheckCheck, RefreshCcwDot, StepForward, WrapText } from "lucide-react";
+import { ArrowDownWideNarrow, CheckCheck, RefreshCcwDot, StepForward, WrapText, MessageCircleHeart} from "lucide-react";
 import { getPrevText, useEditor } from "novel";
 import { CommandGroup, CommandItem, CommandSeparator } from "../ui/command";
 
 const options = [
+  // {
+  //   value: "improve",
+  //   label: "Improve writing",
+  //   icon: RefreshCcwDot,
+  // },
+  // {
+  //   value: "fix",
+  //   label: "Fix grammar",
+  //   icon: CheckCheck,
+  // },
+  // {
+  //   value: "shorter",
+  //   label: "Make shorter",
+  //   icon: ArrowDownWideNarrow,
+  // },
+  // {
+  //   value: "longer",
+  //   label: "Make longer",
+  //   icon: WrapText,
+  // },
   {
-    value: "improve",
-    label: "Improve writing",
-    icon: RefreshCcwDot,
-  },
-  {
-    value: "fix",
-    label: "Fix grammar",
-    icon: CheckCheck,
-  },
-  {
-    value: "shorter",
-    label: "Make shorter",
-    icon: ArrowDownWideNarrow,
-  },
-  {
-    value: "longer",
-    label: "Make longer",
-    icon: WrapText,
-  },
+    value: "evaluate",
+    label: "Evaluate writing",
+    icon: MessageCircleHeart,
+  }
 ];
 
 interface AISelectorCommandsProps {
