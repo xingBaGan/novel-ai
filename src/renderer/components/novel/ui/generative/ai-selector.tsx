@@ -4,7 +4,7 @@ import { useCompletion } from "@ai-sdk/react";
 import { ArrowUp } from "lucide-react";
 import { useEditor } from "novel";
 import { addAIHighlight } from "novel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -15,6 +15,7 @@ import AICompletionCommands from "./ai-completion-command";
 import AISelectorCommands from "./ai-selector-commands";
 //TODO: I think it makes more sense to create a custom Tiptap extension for this functionality https://tiptap.dev/docs/editor/ai/introduction
 import { useComments } from "../../../../contexts/CommentsContext";
+import { getHighlightTracker } from "../../../../utils/highlightTracker";
 
 interface AISelectorProps {
   open: boolean;
@@ -25,13 +26,33 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
   const { editor } = useEditor();
   const [inputValue, setInputValue] = useState("");
   const [command, setCommand] = useState("");
-  const { addCommentInString } = useComments();
+  const { addCommentInString, setHighlightTracker } = useComments();
+
+  // 初始化高亮追踪器
+  useEffect(() => {
+    if (editor) {
+      const tracker = getHighlightTracker(editor);
+      setHighlightTracker(tracker);
+    }
+  }, [editor, setHighlightTracker]);
 
   const { completion, complete, isLoading } = useCompletion({
     api: "/api/generate",
     onFinish: (prompt, completion) => {
       console.log('prompt', prompt, 'completion', completion);
-      addCommentInString(completion);
+      
+      // 获取当前编辑器选择范围和选择的文本
+      const editorSelection = editor ? {
+        from: editor.state.selection.from,
+        to: editor.state.selection.to,
+      } : undefined;
+      
+      const selectedText = editor ? editor.state.doc.textBetween(
+        editor.state.selection.from, 
+        editor.state.selection.to
+      ) : '';
+      
+      addCommentInString(completion, editorSelection, selectedText);
     },
     onError: (e) => {
       toast.error(e.message);

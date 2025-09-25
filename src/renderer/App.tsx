@@ -21,7 +21,7 @@ function AppContent() {
   const { t } = useTranslation();
   const { isSettingsOpen, setIsSettingsOpen } = useSettings();
   const [isMaximized, setIsMaximized] = useState(false);
-  const [message, setMessage] = useState<{show: boolean; text: string}>({ show: false, text: '' });
+  const [message, setMessage] = useState<{ show: boolean; text: string }>({ show: false, text: '' });
   const [, setInstallStatus] = useState<InstallStatus>(InstallStatus.Installed);
   const [showInstallConfirm, setShowInstallConfirm] = useState<{
     isOpen: boolean;
@@ -80,42 +80,42 @@ function AppContent() {
   // }, [])
 
 
-    // Message box close
-    const messageBoxClose = () => {
-      setMessageBox(prev => ({ ...prev, isOpen: false }));
-    };
+  // Message box close
+  const messageBoxClose = () => {
+    setMessageBox(prev => ({ ...prev, isOpen: false }));
+  };
 
-    // Install environment
-    const handleInstallConfirm = async () => {
-      try {
-        setInstallStatus(InstallStatus.Installing);
-        setShowInstallConfirm(null);
-        await window.electron.installEnvironment();
-      } catch (error) {
-        console.error('Installation failed:', error);
+  // Install environment
+  const handleInstallConfirm = async () => {
+    try {
+      setInstallStatus(InstallStatus.Installing);
+      setShowInstallConfirm(null);
+      await window.electron.installEnvironment();
+    } catch (error) {
+      console.error('Installation failed:', error);
+      setMessageBox({
+        isOpen: true,
+        message: t('installationFailed', { error: String(error) }),
+        type: 'error'
+      });
+    } finally {
+      setInstallStatus(InstallStatus.Installed);
+      const installResult = await window.electron.checkEnvironment();
+      if (!installResult.needsInstall) {
         setMessageBox({
           isOpen: true,
-          message: t('installationFailed', { error: String(error) }),
+          message: t('installationComplete'),
+          type: 'success'
+        });
+      } else {
+        setMessageBox({
+          isOpen: true,
+          message: t('restartAgainAndInstall'),
           type: 'error'
         });
-      } finally {
-        setInstallStatus(InstallStatus.Installed);
-        const installResult = await window.electron.checkEnvironment();
-        if (!installResult.needsInstall) {
-          setMessageBox({
-            isOpen: true,
-            message: t('installationComplete'),
-            type: 'success'
-          });
-        } else {
-          setMessageBox({
-            isOpen: true,
-            message: t('restartAgainAndInstall'),
-            type: 'error'
-          });
-        }
       }
-    };
+    }
+  };
 
   const showMessage = (text: string) => {
     setMessage({ show: true, text });
@@ -125,12 +125,10 @@ function AppContent() {
   };
 
   return (
-    <div
-      className="flex flex-col h-screen"
-    >
+    <>
       {/* 自定义标题栏 */}
       <div
-        className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none fixed top-0 left-0 right-0 z-1 w-full"
+        className="flex justify-between items-center px-4 h-8 bg-gray-300 select-none fixed top-0 left-0 right-0 z-10 w-full"
         onDoubleClick={() => window.electron?.maximize()}
         style={{ WebkitAppRegion: 'drag' } as any}
       >
@@ -164,47 +162,52 @@ function AppContent() {
         </div>
       </div>
 
-      {/* 主内容区域 */}
-      <>
-        <NovelEditor />
-        <Comments />
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
-          onSuccess={() => {
-            setIsSettingsOpen(false)
-            showMessage(t('settingsSaved'))
-          }}
-        />
+      <div
+        className="flex flex-col h-[calc(100vh-48px)] relative z-1 mt-12"
+      >
 
-        {/* 消息提示 */}
-        {message.show && (
-          <div className="fixed top-20 left-1/2 z-50 transform -translate-x-1/2">
-            <div className="flex gap-2 items-center p-4 rounded-lg shadow-lg backdrop-blur-sm bg-white/90">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-gray-800">{message.text}</span>
+        {/* 主内容区域 */}
+        <>
+          <NovelEditor />
+          <Comments />
+          <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            onSuccess={() => {
+              setIsSettingsOpen(false)
+              showMessage(t('settingsSaved'))
+            }}
+          />
+
+          {/* 消息提示 */}
+          {message.show && (
+            <div className="fixed top-20 left-1/2 z-50 transform -translate-x-1/2">
+              <div className="flex gap-2 items-center p-4 rounded-lg shadow-lg backdrop-blur-sm bg-white/90">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="text-gray-800">{message.text}</span>
+              </div>
             </div>
-          </div>
+          )}
+        </>
+
+        {/* 安装环境确认 */}
+        {showInstallConfirm && (
+          <InstallConfirmDialog
+            isOpen={showInstallConfirm.isOpen}
+            onCancel={() => setShowInstallConfirm(null)}
+            onConfirm={handleInstallConfirm}
+            checkResult={showInstallConfirm.checkResult}
+          />
         )}
-      </>
 
-      {/* 安装环境确认 */}
-      {showInstallConfirm && (
-        <InstallConfirmDialog
-          isOpen={showInstallConfirm.isOpen}
-          onCancel={() => setShowInstallConfirm(null)}
-          onConfirm={handleInstallConfirm}
-          checkResult={showInstallConfirm.checkResult}
+        <MessageBox
+          isOpen={messageBox.isOpen}
+          onClose={messageBoxClose}
+          message={messageBox.message}
+          type={messageBox.type}
         />
-      )}
-
-      <MessageBox
-        isOpen={messageBox.isOpen}
-        onClose={messageBoxClose}
-        message={messageBox.message}
-        type={messageBox.type}
-      />
-    </div>
+      </div>
+    </>
   );
 }
 
