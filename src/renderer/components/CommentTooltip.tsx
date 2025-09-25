@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { CommentContent } from "./Comments";
 
 type DotEventDetail = {
@@ -38,6 +38,23 @@ export default function CommentTooltip() {
     if (open) document.addEventListener("mousedown", onDocClick, true);
     return () => document.removeEventListener("mousedown", onDocClick, true);
   }, [open]);
+
+  // 保证浮层底部不超过可视区域；若超过则向上偏移（至少 1px）
+  useLayoutEffect(() => {
+    if (!open) return;
+    let raf = requestAnimationFrame(() => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const overflow = rect.bottom - window.innerHeight;
+      if (overflow > 0) {
+        // 放到软件右上角（视口右上角），留出 12px 边距
+        const desiredLeft = Math.max(0, window.innerWidth - rect.width - 12);
+        setPos({ x: desiredLeft - left_DELTA, y: 12 });
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [open, pos.x, pos.y]);
 
   if (!open || !evaluationId) return null;
 

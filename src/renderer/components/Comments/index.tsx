@@ -51,13 +51,12 @@ function CommentChart({ comment, index }: { comment: EvaluationResult, index: nu
 
   return (
     <div className="rounded-md border p-4">
-      <div className="mb-2 text-sm text-muted-foreground">Evaluation #{index + 1}</div>
       <div className="flex flex-row">
         <RadarChartComponent
           ref={chartRef}
           comment={comment}
         />
-        <div className="grow-[3] basis-[600px]">
+        <div className="grow-[3] basis-[300px]">
           {/* Display content based on selection */}
           {selectedContent.type === 'overall' && comment?.overall_summary && (
             <div className="mb-4">
@@ -196,7 +195,7 @@ const RadarChartComponent = React.forwardRef<ReactECharts, { comment: Evaluation
       ref={ref}
       option={combinedOption}
       style={{ height: 300, width: "100%" }}
-      className="grow-[1] basis-[400px]"
+      className="grow-[1] basis-[350px]"
     />
   );
 });
