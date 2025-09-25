@@ -31,6 +31,7 @@ interface CommentsContextType {
     valid: number;
     invalid: number;
   };
+  getCommentsById: (id: string) => EvaluationResult | undefined;
 }
 
 const CommentsContext = createContext<CommentsContextType | undefined>(undefined);
@@ -122,7 +123,10 @@ export function CommentsProvider({ children }: { children: ReactNode }) {
     }
   }, [comments]);
 
-  
+  const getCommentsById = useCallback((id: string) => {
+    return comments.find((c) => c.id === id);
+  }, [comments]);
+
   return (
     <CommentsContext.Provider value={{ 
       comments, 
@@ -133,6 +137,7 @@ export function CommentsProvider({ children }: { children: ReactNode }) {
       setHighlightTracker,
       applyHighlights,
       getHighlightStats,
+      getCommentsById,
     }}>
       {children}
     </CommentsContext.Provider>

@@ -202,15 +202,33 @@ const RadarChartComponent = React.forwardRef<ReactECharts, { comment: Evaluation
 });
 
 export default function Comments() {
-  const { comments } = useComments();
+  const { comments, getCommentsById } = useComments();
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Listen to dot click to focus a single evaluation by id
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ce = e as CustomEvent<{ evaluationId?: string }>; 
+      const id = ce?.detail?.evaluationId;
+      if (id) setActiveId(id);
+    };
+    window.addEventListener("comment-dot-click", handler as any, true);
+    return () => window.removeEventListener("comment-dot-click", handler as any, true);
+  }, []);
+
+  const list: EvaluationResult[] = activeId
+    ? [getCommentsById(activeId) as EvaluationResult]
+    : comments;
 
   return (
     <div className="flex flex-col gap-4 relative">
-      {comments.map((comment: EvaluationResult, index: number) => (
-        <CommentChart key={index} comment={comment} index={index} />
+
+      {list.map((comment: EvaluationResult, index: number) => (
+        <CommentChart key={comment.id ?? index} comment={comment} index={index} />
       ))}
+
       {/* Highlight Legend */}
-      {comments.length > 0 && (
+      {list.length > 0 && (
         <div className="absolute right-2 bottom-2 z-1 bg-white rounded-lg border p-3 shadow-sm">
           <div className="text-sm font-medium mb-2">Highlight Legend</div>
           <div className="space-y-1 text-xs">
@@ -232,3 +250,12 @@ export default function Comments() {
     </div>
   );
 }
+
+export const CommentContent = ({ id }: { id: string }) => {
+  const { getCommentsById } = useComments();
+  const comment = getCommentsById(id);
+  if (!comment) return null;
+  return (
+    <CommentChart key={comment.id} comment={comment} index={0} />
+  );
+};

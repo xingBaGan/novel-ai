@@ -25,6 +25,7 @@ import { Markdown } from "tiptap-markdown";
 import { cx } from "class-variance-authority";
 import { common, createLowlight } from "lowlight";
 import { chineseEnglishWordCounter } from "../../../utils/wordCounter";
+import CommentAnchors from "../headless/extensions/comment-anchors";
 
 //TODO I am using cx here to get tailwind autocomplete working, idk if someone else can write a regex to just capture the class key in objects
 const aiHighlight = AIHighlight;
@@ -182,4 +183,5 @@ export const defaultExtensions = [
   TextStyle,
   Color,
   CustomKeymap,
+  CommentAnchors,
 ];

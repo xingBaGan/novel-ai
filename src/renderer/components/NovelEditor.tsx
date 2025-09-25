@@ -25,6 +25,7 @@ import hljs from "highlight.js";
 import { useComments } from "../contexts/CommentsContext";
 import { clearEvaluationHighlights } from "../utils/evaluationHighlighter";
 import { getHighlightTracker } from "../utils/highlightTracker";
+import CommentTooltip from "./CommentTooltip";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -172,6 +173,7 @@ const NovelEditor = () => {
             <Separator orientation="vertical" />
           </GenerativeMenuSwitch>
         </EditorContent>
+        <CommentTooltip />
       </EditorRoot>
     </div>
   );

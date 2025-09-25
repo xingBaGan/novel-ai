@@ -169,7 +169,7 @@ function AppContent() {
         {/* 主内容区域 */}
         <>
           <NovelEditor />
-          <Comments />
+          {/* <Comments /> */}
           <SettingsModal
             isOpen={isSettingsOpen}
             onClose={() => setIsSettingsOpen(false)}
